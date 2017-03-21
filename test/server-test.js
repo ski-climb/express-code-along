@@ -24,6 +24,7 @@ describe('Server', () => {
     assert(app)
   })
 
+  // SHOW (read)
   describe('GET api/secrets/:id', () => {
     beforeEach(() => {
       app.locals.secrets = {
@@ -48,26 +49,30 @@ describe('Server', () => {
       })
     })
   })
+  // end of SHOW
 
-  describe('GET /', () => {
-    it('should return a 200 status code', (done) => {
-      this.request.get('/', (error, response) => {
+  // INDEX (read)
+  describe('GET /api/secrets', () => {
+    beforeEach(() => {
+      app.locals.secrets = {
+        horse: "Ommi",
+        dog: "Roxi",
+        cat: "Reilly"
+      }
+    })
+
+    it('returns a list of all the secrets', (done) => {
+      this.request.get('api/secrets', (error, response) => {
         if (error) { done(error) }
-        assert.equal(response.statusCode, 200)
+        assert.include(response.body, "Ommi")
+        assert.include(response.body, "Roxi")
+        assert.include(response.body, "Reilly")
         done()
       })
     })
+  }) // end of INDEX
 
-    it('returns the app title', (done) => {
-      this.request.get('/', (error, response) => {
-        const title = app.locals.title
-        if (error) { done(error) }
-        assert.equal(response.body, title)
-        done()
-      })
-    })
-  })
-
+  // CREATE
   describe('POST /api/secrets', () => {
     beforeEach(() => {
       app.locals.secrets = {}
@@ -90,6 +95,26 @@ describe('Server', () => {
         done()
       })
     })
-  })
+  }) // end of CREATE
+
+  // ROOT
+  describe('GET /', () => {
+    it('should return a 200 status code', (done) => {
+      this.request.get('/', (error, response) => {
+        if (error) { done(error) }
+        assert.equal(response.statusCode, 200)
+        done()
+      })
+    })
+
+    it('returns the app title', (done) => {
+      this.request.get('/', (error, response) => {
+        const title = app.locals.title
+        if (error) { done(error) }
+        assert.equal(response.body, title)
+        done()
+      })
+    })
+  }) // end of ROOT
 })
 
